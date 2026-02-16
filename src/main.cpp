@@ -2,6 +2,9 @@
 #include "../include/externals.hpp"
 #include "../include/Leg.hpp"
 
+void spi_init()
+{
+}
 
 extern "C" void app_main(void)
 {
