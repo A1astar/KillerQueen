@@ -1,5 +1,3 @@
-#ifndef D9EB8585_E75C_4E91_940D_26F6DBF32A88
-#define D9EB8585_E75C_4E91_940D_26F6DBF32A88
 #ifndef CONST_H
 #define CONST_H
 
@@ -69,6 +67,3 @@
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates#endif
 
 #endif
-
-
-#endif /* D9EB8585_E75C_4E91_940D_26F6DBF32A88 */
