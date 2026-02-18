@@ -4,8 +4,8 @@
 
 extern "C" void app_main(void)
 {
-    i2c_init(PCA9685_ADDR, GPIO_NUM_21, GPIO_NUM_22);
-
+    pca9685_init(PCA9685_ADDR, GPIO_NUM_21, GPIO_NUM_22);
+    pca9685_pwm(50);
     //i2c_master_transmit(device1, );
 
     // i2c_master_dev_handle_t device2;
