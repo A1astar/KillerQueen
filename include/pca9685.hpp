@@ -1,6 +1,9 @@
 #ifndef PCA9685_HPP
 #define PCA9685_HPP
 
+// ===== Libs =====
+#include <driver/i2c_master.h>
+
 // ===== Hardware addr =====
 #define PCA9685_ADDR 0x40
 
@@ -81,5 +84,41 @@
 #define ALL_LED_OFF_H_REG 0xFD
 #define PRESCALE_REG 0xFE
 #define TESTMODE_REG 0xFF
+
+// ===== MODE1 register bits =====
+#define RESTART (1 << 7)
+#define EXTCLK (1 << 6)
+#define AI (1 << 5)
+#define SLEEP (1 << 4)
+#define SUB1 (1 << 3)
+#define SUB2 (1 << 2)
+#define SUB3 (1 << 1)
+#define ALLCALL (1 << 0)
+
+// ===== MODE2 register bits =====
+#define INVRT (1 << 4)
+#define OCH (1 << 3)
+#define OUTDRV (1 << 2)
+#define OUTNE1 (1 << 1)
+#define OUTNE0 (1 << 0)
+
+/**
+ * @brief Initialize a new I2C connection for PCA9685.
+ *
+ * @param addr address of the device.
+ * @param sda sda GPIO of the device.
+ * @param scl scl GPIO of the device.
+ * @return
+ * - `0` on I2C setup successfully, `-1` on error.
+ */
+int pca9685_init(uint16_t addr, gpio_num_t sda, gpio_num_t scl);
+
+/**
+ * @brief Setup the frequency at which the outputs modulate
+ * @param freq_hz the choosen frequence Hz (min: 24Hz, max: 1526Hz)
+ * @return
+ * `0` on I2C setup successfully, `-1` on error.
+ */
+int pca9685_pwm(uint16_t freq_hz);
 
 #endif
