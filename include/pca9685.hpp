@@ -7,6 +7,24 @@
 // ===== Hardware addr =====
 #define PCA9685_ADDR 0x40
 
+// ===== Output pins =====
+#define PIN0 0
+#define PIN1 1
+#define PIN2 2
+#define PIN3 3
+#define PIN4 4
+#define PIN5 5
+#define PIN6 6
+#define PIN7 7
+#define PIN8 8
+#define PIN9 9
+#define PIN10 10
+#define PIN11 11
+#define PIN12 12
+#define PIN13 13
+#define PIN14 14
+#define PIN15 15
+
 // ===== Registers =====
 #define MODE1_REG 0x00
 #define MODE2_REG 0x01
@@ -85,6 +103,14 @@
 #define PRESCALE_REG 0xFE
 #define TESTMODE_REG 0xFF
 
+typedef struct
+{
+    uint8_t on_l;
+    uint8_t on_h;
+    uint8_t off_l;
+    uint8_t off_h;
+} pca9685_output_regs_t;
+
 // ===== MODE1 register bits =====
 #define RESTART (1 << 7)
 #define EXTCLK (1 << 6)
@@ -114,11 +140,20 @@
 int pca9685_init(uint16_t addr, gpio_num_t sda, gpio_num_t scl);
 
 /**
- * @brief Setup the frequency at which the outputs modulate
- * @param freq_hz the choosen frequence Hz (min: 24Hz, max: 1526Hz)
+ * @brief Setup the frequency at which the outputs modulate.
+ * @param freq_hz Choosen frequence Hz (min: 24Hz, max: 1526Hz).
  * @return
  * `0` on I2C setup successfully, `-1` on error.
  */
-int pca9685_pwm(uint16_t freq_hz);
+int pca9685_set_pwm(uint16_t freq_hz);
+
+/**
+ * @brief setup the pwm duty phase for an output pin.
+ * @param output_pin Choosen pin (0 -> 15).
+ * @param duty_percent Duty phase in percent (0% -> 90%).
+ * @return
+ * `0` on success, `-1` on error.
+ */
+int pca9685_output_control(uint8_t output_pin, uint8_t duty_percent);
 
 #endif
