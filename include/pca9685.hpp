@@ -120,6 +120,13 @@
 #define OUTNE1 (1 << 1)
 #define OUTNE0 (1 << 0)
 
+typedef struct i2c_device_s
+{
+    i2c_master_dev_handle_t device_handle;
+    i2c_master_bus_handle_t bus_handle;
+    uint16_t output_freq_hz;
+} i2c_device_t;
+
 /**
  * @brief Initialize a new I2C connection for PCA9685.
  *
@@ -127,27 +134,37 @@
  * @param sda sda GPIO of the device.
  * @param scl scl GPIO of the device.
  * @return
- * - `0` on I2C setup successfully, `-1` on error.
+ *      - ESP_OK: I2C master transmit success.
+ *      - ESP_ERR_INVALID_ARG: I2C bus initialization failed because of invalid argument.
+ *      - ESP_ERR_NO_MEM: Create I2C bus failed because of out of memory.
+ *      - ESP_ERR_NOT_FOUND: No more free bus.
+ *      - ESP_ERR_TIMEOUT: Operation timeout(larger than xfer_timeout_ms) because the bus is busy or hardware crash.
  */
-int pca9685_init(uint16_t addr, gpio_num_t sda, gpio_num_t scl);
+esp_err_t pca9685_init(uint16_t addr, gpio_num_t sda, gpio_num_t scl);
 
 /**
  * @brief Setup the frequency at which the outputs modulate.
  * @param freq_hz Chosen frequence Hz (min: 24Hz, max: 1526Hz).
  * @return
- * `0` on I2C setup successfully, `-1` on error.
+ *      - ESP_OK: I2C master transmit success.
+ *      - ESP_ERR_INVALID_ARG: I2C bus initialization failed because of invalid argument.
+ *      - ESP_ERR_INVALID_ARG: I2C master transmit parameter invalid.
+ *      - ESP_ERR_TIMEOUT: Operation timeout(larger than xfer_timeout_ms) because the bus is busy or hardware crash.
  */
-int pca9685_set_pwm(uint16_t freq_hz);
+esp_err_t pca9685_set_pwm(uint16_t freq_hz);
 
 /**
  * @brief setup the pwm duty phase for an output pin.
  *         The `pca9685_set_pwm()` function shoud be set
  *         before calling this function.
- * @param output_pin Choosen pin (0 -> 15).
+ * @param output_pin Chosen pin (0 -> 15).
  * @param pulse_us Duty phase duration in us.
  * @return
- * `0` on success, `-1` on error.
+ *      - ESP_OK: I2C master transmit success.
+ *      - ESP_ERR_NOT_ALLOWED: No Freq Hz found.
+ *      - ESP_ERR_INVALID_ARG: I2C master transmit parameter invalid.
+ *      - ESP_ERR_TIMEOUT: Operation timeout(larger than xfer_timeout_ms) because the bus is busy or hardware crash.
  */
-int pca9685_set_pulse_us(uint8_t output_pin, uint16_t pulse_us);
+esp_err_t pca9685_set_pulse_us(uint8_t output_pin, uint16_t pulse_us);
 
 #endif
