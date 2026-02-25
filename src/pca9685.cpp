@@ -84,14 +84,15 @@ esp_err_t pca9685_set_pwm(i2c_master_dev_handle_t device, uint16_t freq_hz)
     return ESP_OK;
 }
 
-esp_err_t pca9685_set_pulse_us(pca9685_device_t device, uint8_t output_pin, uint16_t pulse_us)
+esp_err_t pca9685_set_pulse_us(pca9685_device_t device, uint8_t output_pin, uint16_t delay_us, uint16_t pulse_us)
 {
     if(output_pin > 15)
         return ESP_ERR_INVALID_ARG;
 
-    uint16_t asserted_tick_val = 0x00;
     uint16_t total_us = 1000000 / device.frequence;
-    uint16_t negated_tick_val = ((pulse_us * 4096) / total_us) - 1;
+
+    uint16_t asserted_tick_val = ((delay_us * 4096) / total_us);
+    uint16_t negated_tick_val = ((pulse_us * 4096) / total_us) + asserted_tick_val - 1;
 
     uint8_t assereted_l = (uint8_t)(asserted_tick_val & 0xFF);
     uint8_t assereted_h = (uint8_t)(asserted_tick_val >> 8) & 0x0F;

@@ -14,16 +14,16 @@ extern "C" void app_main(void)
 
     while (1)
     {
-        pca9685_set_pulse_us(device1, PIN15, USMIN);
-        pca9685_set_pulse_us(device1, PIN12, USMIN);
+        pca9685_set_pulse_us(device1, PIN15, 0, USMIN);
+        pca9685_set_pulse_us(device1, PIN12, 512, USMIN);
 
         vTaskDelay(pdMS_TO_TICKS(1000));
 
         // pca9685_set_pulse_us(device1, PIN15, SERVO_FREQ, 1600);
         // pca9685_set_pulse_us(device1, PIN12, SERVO_FREQ, 1700);
 
-        pca9685_set_pulse_us(device1, PIN15, USNEUTRAL);
-        pca9685_set_pulse_us(device1, PIN12, USNEUTRAL);
+        pca9685_set_pulse_us(device1, PIN15, 0, USNEUTRAL);
+        pca9685_set_pulse_us(device1, PIN12, 512, USNEUTRAL);
 
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
