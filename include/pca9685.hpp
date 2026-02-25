@@ -4,9 +4,6 @@
 // ===== Libs =====
 #include <driver/i2c_master.h>
 
-// ===== Hardware addr =====
-#define PCA9685_ADDR 0x40
-
 // ===== Output pins =====
 #define PIN0 0
 #define PIN1 1
@@ -120,6 +117,13 @@
 #define OUTNE1 (1 << 1)
 #define OUTNE0 (1 << 0)
 
+// ===== Structs =====
+typedef struct pca9685_device_s
+{
+    i2c_master_dev_handle_t handler;
+    uint16_t frequence;
+} pca9685_device_t;
+
 // ===== Functions =====
 
 /**
@@ -172,11 +176,9 @@ esp_err_t pca9685_set_pwm(i2c_master_dev_handle_t device, uint16_t freq_hz);
  *         The `pca9685_set_pwm()` function shoud be set
  *         before calling this function.
  *
- * @param[in] device device handler.
- *
+ * @param[in] device device.
  * @param[in] output_pin selected pin (0 -> 15).
  * @param[in] pulse_us duty phase duration in us.
- * @param[in] freq_hz current freqence Hz of the device.
  *
  * @return
  *      - ESP_OK: I2C master transmit success.
@@ -184,6 +186,6 @@ esp_err_t pca9685_set_pwm(i2c_master_dev_handle_t device, uint16_t freq_hz);
  *      - ESP_ERR_INVALID_ARG: I2C master transmit parameter invalid.
  *      - ESP_ERR_TIMEOUT: Operation timeout(larger than xfer_timeout_ms) because the bus is busy or hardware crash.
  */
-esp_err_t pca9685_set_pulse_us(i2c_master_dev_handle_t device, uint8_t output_pin, uint16_t freq_hz, uint16_t pulse_us);
+esp_err_t pca9685_set_pulse_us(pca9685_device_t device, uint8_t output_pin, uint16_t pulse_us);
 
 #endif

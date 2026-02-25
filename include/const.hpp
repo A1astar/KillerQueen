@@ -23,13 +23,13 @@
 #define FOOT_LENGTH 100 //length between foot servo and floor (mm)
 #define ORIGIN_HEIGHT 100 //height of base leg servo (mm)
 
-#define RF_LEG_X    //angle from x axis
-#define RM_LEG_X 90 //angle from x axis
-#define RB_LEG_X    //angle from x axis
+#define RF_LEG_X -70  //angle from x axis
+#define RM_LEG_X -90  //angle from x axis
+#define RB_LEG_X -110 //angle from x axis
 
-#define LF_LEG_X    //angle from x axis
-#define LM_LEG_X 90 //angle from x axis
-#define LB_LEG_X    //angle from x axis
+#define LF_LEG_X 70  //angle from x axis
+#define LM_LEG_X 90  //angle from x axis
+#define LB_LEG_X 110 //angle from x axis
 
 // ===== Hardware addresses =====
 #define PCA9685_ADDR 0x40 // default PCA9685 i2c addr
@@ -62,8 +62,9 @@
 // ===== Servo const =====
 #define SERVOMIN 80 // This is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAX 600 // This is the 'maximum' pulse length count (out of 4096)
-#define USMIN 600 // This is the rounded 'minimum' microsecond length based on the minimum pulse of 150
-#define USMAX 2400 // This is the rounded 'maximum' microsecond length based on the maximum pulse of 600
+#define USMIN 500 // This is the rounded 'minimum' microsecond length based on the minimum pulse of 150
+#define USNEUTRAL 1500
+#define USMAX 2500 // This is the rounded 'maximum' microsecond length based on the maximum pulse of 600
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates#endif
 
 #endif
