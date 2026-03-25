@@ -3,6 +3,7 @@
 
 // ===== Libs =====
 #include <driver/i2c_master.h>
+#include <rom/ets_sys.h>
 
 // ===== Output pins =====
 #define PIN0 0
@@ -178,6 +179,7 @@ esp_err_t pca9685_set_pwm(i2c_master_dev_handle_t device, uint16_t freq_hz);
  *
  * @param[in] device device.
  * @param[in] output_pin selected pin (0 -> 15).
+ * @param[in] delay_us phase shift in us.
  * @param[in] pulse_us duty phase duration in us.
  *
  * @return

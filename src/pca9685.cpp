@@ -1,4 +1,4 @@
-#include "../include/killerqueen.hpp"
+#include "../include/pca9685.hpp"
 
 static esp_err_t write_register(i2c_master_dev_handle_t device, uint8_t reg, uint8_t data)
 {
