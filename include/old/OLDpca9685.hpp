@@ -1,7 +1,7 @@
 #ifndef PCA9685_HPP
 #define PCA9685_HPP
 
-#include <stdint.h>
+// ===== Libs =====
 #include <driver/i2c_master.h>
 #include <rom/ets_sys.h>
 
@@ -118,22 +118,76 @@
 #define OUTNE1 (1 << 1)
 #define OUTNE0 (1 << 0)
 
-class Pca9685
+// ===== Structs =====
+typedef struct pca9685_device_s
 {
-    public:
-        Pca9685(i2c_master_bus_handle_t master_bus, uint16_t device_addr);
+    i2c_master_dev_handle_t handler;
+    uint16_t frequence;
+} pca9685_device_t;
 
-        esp_err_t init();
-        esp_err_t set_pwm(uint16_t freq_hz);
-        esp_err_t write_pulse_us(uint8_t pin, uint16_t delay_us, uint16_t pulse_us);
+// ===== Functions =====
 
-    private:
-        esp_err_t write_register(uint8_t reg, uint8_t data);
+/**
+ * @brief Allocate a new i2c master bus for pca9685 devices.
+ *
+ * @param[out] master_bus bus handler.
+ * @param[in] sda sda GPIO of i2c master bus.
+ * @param[in] scl scl GPIO of i2c master bus.
+ *
+ * @return
+ *      - ESP_OK: I2C master bus initialized successfully.
+ *      - ESP_ERR_INVALID_ARG: I2C bus initialization failed because of invalid argument.
+ *      - ESP_ERR_NO_MEM: Create I2C bus failed because of out of memory.
+ *      - ESP_ERR_NOT_FOUND: No more free bus.
+ */
+esp_err_t master_bus_init(i2c_master_bus_handle_t *master_bus, gpio_num_t sda, gpio_num_t scl);
 
-        uint16_t _device_addr;
-        uint16_t _device_freq_hz;
-        i2c_master_bus_handle_t _master_bus;
-        i2c_master_dev_handle_t _device;
-};
+/**
+ * @brief Initialize a new pca9685 device on the master bus.
+ *
+ * @param[in] addr address of the device.
+ * @param[in] master_bus master bus handler.
+ * @param[out] device device handler.
+ *
+ * @return
+ *      - ESP_OK: I2C master transmit success.
+ *      - ESP_ERR_INVALID_ARG: I2C bus initialization failed because of invalid argument.
+ *      - ESP_ERR_NO_MEM: Create I2C bus failed because of out of memory.
+ *      - ESP_ERR_NOT_FOUND: No more free bus.
+ *      - ESP_ERR_TIMEOUT: Operation timeout(larger than xfer_timeout_ms) because the bus is busy or hardware crash.
+ */
+esp_err_t pca9685_init(uint16_t addr, i2c_master_bus_handle_t master_bus, i2c_master_dev_handle_t *device);
+
+/**
+ * @brief Set the frequency at which the outputs modulate for a selected device.
+ *
+ * @param[in] device device handler.
+ * @param[in] freq_hz chosen frequence Hz (min: 24Hz, max: 1526Hz).
+ *
+ * @return
+ *      - ESP_OK: I2C master transmit success.
+ *      - ESP_ERR_INVALID_ARG: I2C bus initialization failed because of invalid argument.
+ *      - ESP_ERR_INVALID_ARG: I2C master transmit parameter invalid.
+ *      - ESP_ERR_TIMEOUT: Operation timeout(larger than xfer_timeout_ms) because the bus is busy or hardware crash.
+ */
+esp_err_t pca9685_set_pwm(i2c_master_dev_handle_t device, uint16_t freq_hz);
+
+/**
+ * @brief setup the pwm duty phase for an output pin.
+ *         The `pca9685_set_pwm()` function shoud be set
+ *         before calling this function.
+ *
+ * @param[in] device device.
+ * @param[in] output_pin selected pin (0 -> 15).
+ * @param[in] delay_us phase shift in us.
+ * @param[in] pulse_us duty phase duration in us.
+ *
+ * @return
+ *      - ESP_OK: I2C master transmit success.
+ *      - ESP_ERR_NOT_ALLOWED: No Freq Hz found.
+ *      - ESP_ERR_INVALID_ARG: I2C master transmit parameter invalid.
+ *      - ESP_ERR_TIMEOUT: Operation timeout(larger than xfer_timeout_ms) because the bus is busy or hardware crash.
+ */
+esp_err_t pca9685_set_pulse_us(pca9685_device_t device, uint8_t output_pin, uint16_t delay_us, uint16_t pulse_us);
 
 #endif

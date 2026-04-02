@@ -2,11 +2,12 @@
 #define SERVO_HPP
 
 #include "killerqueen.hpp"
+#include "Pca9685.hpp"
 
 class Servo
 {
     public:
-        Servo(pca9685_device_t const device, uint8_t const pin, uint16_t const min_pulse_us, uint16_t const max_pulse_us, uint16_t const neutral_pulse_us);
+        Servo(Pca9685 &device, uint8_t const pin, uint16_t const min_pulse_us, uint16_t const max_pulse_us, uint16_t const neutral_pulse_us);
 
         void move_servo_to_degree(float target_pos_degree);
         uint16_t angle_to_pulse_ms(float angle);
@@ -18,7 +19,7 @@ class Servo
 
     private:
 
-        pca9685_device_t const _device;
+        Pca9685 _device;
         uint8_t const _pin;
         uint16_t const _min_pulse_us;
         uint16_t const _max_pulse_us;
