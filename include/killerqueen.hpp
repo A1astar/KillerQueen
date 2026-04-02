@@ -4,7 +4,7 @@
 // ===== includes =====
 #include "const.hpp"
 #include "pca9685.hpp"
-#include "ik.hpp"
+#include "motion_controller.hpp"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <stdio.h>
