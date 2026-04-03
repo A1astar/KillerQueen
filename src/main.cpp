@@ -22,6 +22,25 @@ esp_err_t master_bus_init(i2c_master_bus_handle_t *master_bus, gpio_num_t sda, g
     return i2c_new_master_bus(&master_bus_config, master_bus);
 }
 
+static void motion_task(void *pv_arg)
+{
+    MotionController *Controller = static_cast<MotionController*>(pv_arg);
+    TickType_t last_wake;
+    TickType_t period;
+    uint64_t now_us = (uint64_t)esp_timer_get_time();
+
+    Controller->start_demo(now_us);
+
+    last_wake = xTaskGetTickCount();
+    period = pdMS_TO_TICKS(10);
+    while (true)
+    {
+        now_us = (uint64_t)esp_timer_get_time();
+        Controller->update(now_us);
+        vTaskDelayUntil(&last_wake, period);
+    }
+}
+
 extern "C" void app_main(void)
 {
     /*i2c master bus init*/
@@ -70,5 +89,8 @@ extern "C" void app_main(void)
     static Leg Leg_lb(Servo_lb_yaw, Servo_lb_elbow_pitch, Servo_lb_foot_pitch);
 
     /*motion controller init */
-    static MotionController MotionController(left_pca9685, right_pca9685, Leg_rf, Leg_rm, Leg_rb, Leg_lf, Leg_lm, Leg_lb);
+    static MotionController Controller(left_pca9685, right_pca9685, Leg_rf, Leg_rm, Leg_rb, Leg_lf, Leg_lm, Leg_lb);
+
+    /*Tasks creation*/
+    xTaskCreatePinnedToCore(motion_task, "motion_task", 4096, &Controller, 5, nullptr, 1);
 }

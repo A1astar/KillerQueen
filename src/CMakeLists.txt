@@ -6,5 +6,7 @@ FILE(GLOB_RECURSE app_sources ${CMAKE_SOURCE_DIR}/src/*.*)
 idf_component_register(
 	SRCS "main.cpp" "Pca9685.cpp" "bluetooth.cpp" "MotionController.cpp" "Servo.cpp" "Leg.cpp"
 	REQUIRES bt
+	REQUIRES esp_driver_i2c
+	REQUIRES esp_timer
 )
 

@@ -35,9 +35,9 @@ void MotionController::update(uint64_t now_us)
     if ((now_us - this->_last_command_us) >= 800000ULL)
     {
         if (this->_phase == 0)
-            this->_Leg_rf.move_servos_degree(20.0f, 15.0f, -10.0f, 500, now_us);
+            this->_Leg_rf.move_servos_degree(20.0f, 40.0f, -70.0f, 500, now_us);
         else if (this->_phase == 1)
-            this->_Leg_rf.move_servos_degree(-20.0f, 10.0f, 5.0f, 500, now_us);
+            this->_Leg_rf.move_servos_degree(-80.0f, -40.0f, 70.0f, 500, now_us);
         else
             this->_Leg_rf.move_servos_degree(0.0f, 0.0f, 0.0f, 500, now_us);
 
