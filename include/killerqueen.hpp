@@ -3,7 +3,6 @@
 
 // ===== includes =====
 #include "const.hpp"
-#include "motion_controller.hpp"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <stdio.h>

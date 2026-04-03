@@ -2,29 +2,46 @@
 #define SERVO_HPP
 
 #include "killerqueen.hpp"
-#include "Pca9685.hpp"
 
 class Servo
 {
     public:
-        Servo(Pca9685 &device, uint8_t const pin, uint16_t const min_pulse_us, uint16_t const max_pulse_us, uint16_t const neutral_pulse_us);
+        Servo
+        (
+            uint8_t const pin,
+            uint16_t const min_pulse_us,
+            uint16_t const max_pulse_us,
+            uint16_t const neutral_pulse_us,
+            float home_deg
+        );
 
-        void move_servo_to_degree(float target_pos_degree);
-        uint16_t angle_to_pulse_ms(float angle);
+        void move_to(float target_deg, uint32_t duration_ms, uint64_t now_us);
+        void update(uint64_t now_us);
 
-        uint16_t get_min_pulse_us() const;
-        uint16_t get_max_pulse_us() const;
-        uint16_t get_neutral_pulse_us() const;
-        float get_current_pos_degree();
+        bool get_is_moving() const;
+        uint8_t get_channel() const;
+        uint16_t get_current_pulse() const;
+        float get_current_pos_deg() const;
 
     private:
+        uint16_t angle_to_pulse_ms(float angle) const;
+        float clampf(float target_deg, float min_deg, float max_deg) const;
+        float lerp(float a, float b, float t) const;
+        float smootherstep(float t) const;
 
-        Pca9685 _device;
         uint8_t const _pin;
         uint16_t const _min_pulse_us;
         uint16_t const _max_pulse_us;
         uint16_t const _neutral_pulse_us;
+
+        float _start_pos_degree;
         float _current_pos_degree;
+        float _target_pos_degree;
+
+        uint64_t _start_time_us;
+        uint64_t _duration_us;
+
+        bool _is_moving;
 };
 
 #endif

@@ -1,0 +1,50 @@
+#include "../include/MotionController.hpp"
+
+MotionController::MotionController
+(
+    Pca9685 &left_side_controller,
+    Pca9685 &right_side_controller,
+    Leg &_Leg_rf,
+    Leg &_Leg_rm,
+    Leg &_Leg_rb,
+    Leg &_Leg_lf,
+    Leg &_Leg_lm,
+    Leg &_Leg_lb
+)
+:   _Right_side_driver(right_side_controller),
+    _Left_side_driver(left_side_controller),
+    _Leg_rf(_Leg_rf),
+    _Leg_rm(_Leg_rm),
+    _Leg_rb(_Leg_rb),
+    _Leg_lf(_Leg_lf),
+    _Leg_lm(_Leg_lm),
+    _Leg_lb(_Leg_lb),
+    _last_command_us(0),
+    _phase(0)
+{}
+
+void MotionController::start_demo(uint64_t now_us)
+{
+    this->_last_command_us = now_us;
+    this->_phase = 0;
+    this->_Leg_rf.move_servos_degree(0.0f, 0.0f, 0.0f, 500, now_us);
+}
+
+void MotionController::update(uint64_t now_us)
+{
+    if ((now_us - this->_last_command_us) >= 800000ULL)
+    {
+        if (this->_phase == 0)
+            this->_Leg_rf.move_servos_degree(20.0f, 15.0f, -10.0f, 500, now_us);
+        else if (this->_phase == 1)
+            this->_Leg_rf.move_servos_degree(-20.0f, 10.0f, 5.0f, 500, now_us);
+        else
+            this->_Leg_rf.move_servos_degree(0.0f, 0.0f, 0.0f, 500, now_us);
+
+        this->_phase = (this->_phase + 1) % 3;
+        this->_last_command_us = now_us;
+    }
+
+    this->_Leg_rf.update(now_us);
+    this->_Leg_rf.write(this->_Right_side_driver);
+}

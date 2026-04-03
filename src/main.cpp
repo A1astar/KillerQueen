@@ -2,6 +2,7 @@
 #include "../include/Servo.hpp"
 #include "../include/Leg.hpp"
 #include "../include/Pca9685.hpp"
+#include "../include/MotionController.hpp"
 
 esp_err_t master_bus_init(i2c_master_bus_handle_t *master_bus, gpio_num_t sda, gpio_num_t scl)
 {
@@ -23,79 +24,51 @@ esp_err_t master_bus_init(i2c_master_bus_handle_t *master_bus, gpio_num_t sda, g
 
 extern "C" void app_main(void)
 {
-    i2c_master_bus_handle_t master_bus;
+    /*i2c master bus init*/
+    static i2c_master_bus_handle_t master_bus;
     master_bus_init(&master_bus, GPIO_NUM_21, GPIO_NUM_22);
 
-    Pca9685 right_pca9685(master_bus, RIGHT_PCA9685_ADDR);
+    /*pca9685 init*/
+    static Pca9685 right_pca9685(master_bus, RIGHT_PCA9685_ADDR);
     right_pca9685.init();
     right_pca9685.set_pwm(SERVO_FREQ);
 
-    Pca9685 left_pca9685(master_bus, LEFT_PCA9685_ADDR);
+    static Pca9685 left_pca9685(master_bus, LEFT_PCA9685_ADDR);
     left_pca9685.init();
     left_pca9685.set_pwm(SERVO_FREQ);
 
-    Servo Servo_rf_yaw(right_pca9685, RF_YAW_PIN, RF_YAW_MIN, RF_YAW_MAX, RF_YAW_NEUTRAL);
-    Servo Servo_rf_elbow_pitch(right_pca9685, RF_ELBOW_PITCH_PIN, RF_ELBOW_PITCH_MIN, RF_YAW_MAX, RF_ELBOW_PITCH_NEUTRAL);
-    Servo Servo_rf_foot_pitch(right_pca9685, RF_FOOT_PITCH_PIN, RF_FOOT_PITCH_MIN, RF_FOOT_PITCH_MAX, RF_FOOT_PITCH_NEUTRAL);
+    /*right servos init*/
+    static Servo Servo_rf_yaw(RF_YAW_PIN, RF_YAW_MIN, RF_YAW_MAX, RF_YAW_NEUTRAL, 0);
+    static Servo Servo_rf_elbow_pitch(RF_ELBOW_PITCH_PIN, RF_ELBOW_PITCH_MIN, RF_YAW_MAX, RF_ELBOW_PITCH_NEUTRAL, 0);
+    static Servo Servo_rf_foot_pitch(RF_FOOT_PITCH_PIN, RF_FOOT_PITCH_MIN, RF_FOOT_PITCH_MAX, RF_FOOT_PITCH_NEUTRAL, 0);
+    static Servo Servo_rm_yaw(RM_YAW_PIN, RM_YAW_MIN, RM_YAW_MAX, RM_YAW_NEUTRAL, 0);
+    static Servo Servo_rm_elbow_pitch(RM_ELBOW_PITCH_PIN, RM_ELBOW_PITCH_MIN, RM_YAW_MAX, RM_ELBOW_PITCH_NEUTRAL, 0);
+    static Servo Servo_rm_foot_pitch(RM_FOOT_PITCH_PIN, RM_FOOT_PITCH_MIN, RM_FOOT_PITCH_MAX, RM_FOOT_PITCH_NEUTRAL, 0);
+    static Servo Servo_rb_yaw(RB_YAW_PIN, RB_YAW_MIN, RB_YAW_MAX, RB_YAW_NEUTRAL, 0);
+    static Servo Servo_rb_elbow_pitch(RB_ELBOW_PITCH_PIN, RB_ELBOW_PITCH_MIN, RB_YAW_MAX, RB_ELBOW_PITCH_NEUTRAL, 0);
+    static Servo Servo_rb_foot_pitch(RB_FOOT_PITCH_PIN, RB_FOOT_PITCH_MIN, RB_FOOT_PITCH_MAX, RB_FOOT_PITCH_NEUTRAL, 0);
 
-    Servo Servo_rm_yaw(right_pca9685, RM_YAW_PIN, RM_YAW_MIN, RM_YAW_MAX, RM_YAW_NEUTRAL);
-    Servo Servo_rm_elbow_pitch(right_pca9685, RM_ELBOW_PITCH_PIN, RM_ELBOW_PITCH_MIN, RM_YAW_MAX, RM_ELBOW_PITCH_NEUTRAL);
-    Servo Servo_rm_foot_pitch(right_pca9685, RM_FOOT_PITCH_PIN, RM_FOOT_PITCH_MIN, RM_FOOT_PITCH_MAX, RM_FOOT_PITCH_NEUTRAL);
+    /*left servos init*/
+    static Servo Servo_lf_yaw(LF_YAW_PIN, LF_YAW_MIN, LF_YAW_MAX, LF_YAW_NEUTRAL, 0);
+    static Servo Servo_lf_elbow_pitch(LF_ELBOW_PITCH_PIN, LF_ELBOW_PITCH_MIN, LF_YAW_MAX, LF_ELBOW_PITCH_NEUTRAL, 0);
+    static Servo Servo_lf_foot_pitch(LF_FOOT_PITCH_PIN, LF_FOOT_PITCH_MIN, LF_FOOT_PITCH_MAX, LF_FOOT_PITCH_NEUTRAL, 0);
+    static Servo Servo_lm_yaw(LM_YAW_PIN, LM_YAW_MIN, LM_YAW_MAX, LM_YAW_NEUTRAL, 0);
+    static Servo Servo_lm_elbow_pitch(LM_ELBOW_PITCH_PIN, LM_ELBOW_PITCH_MIN, LM_YAW_MAX, LM_ELBOW_PITCH_NEUTRAL, 0);
+    static Servo Servo_lm_foot_pitch(LM_FOOT_PITCH_PIN, LM_FOOT_PITCH_MIN, LM_FOOT_PITCH_MAX, LM_FOOT_PITCH_NEUTRAL, 0);
+    static Servo Servo_lb_yaw(LB_YAW_PIN, LB_YAW_MIN, LB_YAW_MAX, LB_YAW_NEUTRAL, 0);
+    static Servo Servo_lb_elbow_pitch(LB_ELBOW_PITCH_PIN, LB_ELBOW_PITCH_MIN, LB_YAW_MAX, LB_ELBOW_PITCH_NEUTRAL, 0);
+    static Servo Servo_lb_foot_pitch(LB_FOOT_PITCH_PIN, LB_FOOT_PITCH_MIN, LB_FOOT_PITCH_MAX, LB_FOOT_PITCH_NEUTRAL, 0);
 
-    Servo Servo_rb_yaw(right_pca9685, RB_YAW_PIN, RB_YAW_MIN, RB_YAW_MAX, RB_YAW_NEUTRAL);
-    Servo Servo_rb_elbow_pitch(right_pca9685, RB_ELBOW_PITCH_PIN, RB_ELBOW_PITCH_MIN, RB_YAW_MAX, RB_ELBOW_PITCH_NEUTRAL);
-    Servo Servo_rb_foot_pitch(right_pca9685, RB_FOOT_PITCH_PIN, RB_FOOT_PITCH_MIN, RB_FOOT_PITCH_MAX, RB_FOOT_PITCH_NEUTRAL);
+    /*right legs init*/
+    static Leg Leg_rf(Servo_rf_yaw, Servo_rf_elbow_pitch, Servo_rf_foot_pitch);
+    static Leg Leg_rm(Servo_rm_yaw, Servo_rm_elbow_pitch, Servo_rm_foot_pitch);
+    static Leg Leg_rb(Servo_rb_yaw, Servo_rb_elbow_pitch, Servo_rb_foot_pitch);
 
-    Servo Servo_lf_yaw(left_pca9685, LF_YAW_PIN, LF_YAW_MIN, LF_YAW_MAX, LF_YAW_NEUTRAL);
-    Servo Servo_lf_elbow_pitch(left_pca9685, LF_ELBOW_PITCH_PIN, LF_ELBOW_PITCH_MIN, LF_YAW_MAX, LF_ELBOW_PITCH_NEUTRAL);
-    Servo Servo_lf_foot_pitch(left_pca9685, LF_FOOT_PITCH_PIN, LF_FOOT_PITCH_MIN, LF_FOOT_PITCH_MAX, LF_FOOT_PITCH_NEUTRAL);
+    /*left legs init*/
+    static Leg Leg_lf(Servo_lf_yaw, Servo_lf_elbow_pitch, Servo_lf_foot_pitch);
+    static Leg Leg_lm(Servo_lm_yaw, Servo_lm_elbow_pitch, Servo_lm_foot_pitch);
+    static Leg Leg_lb(Servo_lb_yaw, Servo_lb_elbow_pitch, Servo_lb_foot_pitch);
 
-    Servo Servo_lm_yaw(left_pca9685, LM_YAW_PIN, LM_YAW_MIN, LM_YAW_MAX, LM_YAW_NEUTRAL);
-    Servo Servo_lm_elbow_pitch(left_pca9685, LM_ELBOW_PITCH_PIN, LM_ELBOW_PITCH_MIN, LM_YAW_MAX, LM_ELBOW_PITCH_NEUTRAL);
-    Servo Servo_lm_foot_pitch(left_pca9685, LM_FOOT_PITCH_PIN, LM_FOOT_PITCH_MIN, LM_FOOT_PITCH_MAX, LM_FOOT_PITCH_NEUTRAL);
-
-    Servo Servo_lb_yaw(left_pca9685, LB_YAW_PIN, LB_YAW_MIN, LB_YAW_MAX, LB_YAW_NEUTRAL);
-    Servo Servo_lb_elbow_pitch(left_pca9685, LB_ELBOW_PITCH_PIN, LB_ELBOW_PITCH_MIN, LB_YAW_MAX, LB_ELBOW_PITCH_NEUTRAL);
-    Servo Servo_lb_foot_pitch(left_pca9685, LB_FOOT_PITCH_PIN, LB_FOOT_PITCH_MIN, LB_FOOT_PITCH_MAX, LB_FOOT_PITCH_NEUTRAL);
-
-    Leg Leg_rf(Servo_rf_yaw, Servo_rf_elbow_pitch, Servo_rf_foot_pitch);
-    Leg Leg_rm(Servo_rm_yaw, Servo_rm_elbow_pitch, Servo_rm_foot_pitch);
-    Leg Leg_rb(Servo_rb_yaw, Servo_rb_elbow_pitch, Servo_rb_foot_pitch);
-
-    Leg Leg_lf(Servo_lf_yaw, Servo_lf_elbow_pitch, Servo_lf_foot_pitch);
-    Leg Leg_lm(Servo_lm_yaw, Servo_lm_elbow_pitch, Servo_lm_foot_pitch);
-    Leg Leg_lb(Servo_lb_yaw, Servo_lb_elbow_pitch, Servo_lb_foot_pitch);
-
-    while (1)
-    {
-        Leg_rf.move_servos_degree(0, 0, 0);
-        vTaskDelay(pdMS_TO_TICKS(500));
-
-        Leg_rf.move_servos_degree(30, 30, 30);
-        vTaskDelay(pdMS_TO_TICKS(500));
-
-        Leg_rf.move_servos_degree(60, 60, 60);
-        vTaskDelay(pdMS_TO_TICKS(500));
-
-        Leg_rf.move_servos_degree(30, 30, 30);
-        vTaskDelay(pdMS_TO_TICKS(500));
-
-        Leg_rf.move_servos_degree(0, 0, 0);
-        vTaskDelay(pdMS_TO_TICKS(500));
-
-        Leg_rf.move_servos_degree(-30, -30, -30);
-        vTaskDelay(pdMS_TO_TICKS(500));
-
-        Leg_rf.move_servos_degree(-60, -60, -60);
-        vTaskDelay(pdMS_TO_TICKS(500));
-
-        Leg_rf.move_servos_degree(-80, -80, -80);
-        vTaskDelay(pdMS_TO_TICKS(500));
-
-        Leg_rf.move_servos_degree(-60, -60, -60);
-        vTaskDelay(pdMS_TO_TICKS(500));
-
-        Leg_rf.move_servos_degree(-30, -30, -30);
-        vTaskDelay(pdMS_TO_TICKS(500));
-    }
+    /*motion controller init */
+    static MotionController MotionController(left_pca9685, right_pca9685, Leg_rf, Leg_rm, Leg_rb, Leg_lf, Leg_lm, Leg_lb);
 }
