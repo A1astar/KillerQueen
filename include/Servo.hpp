@@ -25,7 +25,7 @@ class Servo
 
     private:
         uint16_t angle_to_pulse_ms(float angle) const;
-        float clampf(float target_deg, float min_deg, float max_deg) const;
+        float clampf(float current_val, float min_val, float max_val) const;
         float lerp(float a, float b, float t) const;
         float smootherstep(float t) const;
 

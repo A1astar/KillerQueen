@@ -3,6 +3,7 @@
 #include "../include/Leg.hpp"
 #include "../include/Pca9685.hpp"
 #include "../include/MotionController.hpp"
+#include "../include/bluetooth.hpp"
 
 esp_err_t master_bus_init(i2c_master_bus_handle_t *master_bus, gpio_num_t sda, gpio_num_t scl)
 {
@@ -25,14 +26,14 @@ esp_err_t master_bus_init(i2c_master_bus_handle_t *master_bus, gpio_num_t sda, g
 static void motion_task(void *pv_arg)
 {
     MotionController *Controller = static_cast<MotionController*>(pv_arg);
-    TickType_t last_wake;
-    TickType_t period;
+
     uint64_t now_us = (uint64_t)esp_timer_get_time();
 
     Controller->start_demo(now_us);
 
-    last_wake = xTaskGetTickCount();
-    period = pdMS_TO_TICKS(10);
+    TickType_t last_wake = xTaskGetTickCount();
+    TickType_t period = pdMS_TO_TICKS(10);
+
     while (true)
     {
         now_us = (uint64_t)esp_timer_get_time();
@@ -41,20 +42,32 @@ static void motion_task(void *pv_arg)
     }
 }
 
+void setup_nvs()
+{
+    if(nvs_flash_init() == ESP_ERR_NVS_NO_FREE_PAGES)
+    {
+        ESP_ERROR_CHECK_WITHOUT_ABORT(nvs_flash_erase());
+        ESP_ERROR_CHECK_WITHOUT_ABORT(nvs_flash_init());
+    }
+}
+
 extern "C" void app_main(void)
 {
+    /*nvs partition init*/
+    setup_nvs();
+
     /*i2c master bus init*/
     static i2c_master_bus_handle_t master_bus;
-    master_bus_init(&master_bus, GPIO_NUM_21, GPIO_NUM_22);
+    ESP_ERROR_CHECK(master_bus_init(&master_bus, GPIO_NUM_21, GPIO_NUM_22));
 
     /*pca9685 init*/
     static Pca9685 right_pca9685(master_bus, RIGHT_PCA9685_ADDR);
-    right_pca9685.init();
-    right_pca9685.set_pwm(SERVO_FREQ);
+    ESP_ERROR_CHECK(right_pca9685.init());
+    ESP_ERROR_CHECK(right_pca9685.set_pwm(SERVO_FREQ));
 
-    static Pca9685 left_pca9685(master_bus, LEFT_PCA9685_ADDR);
-    left_pca9685.init();
-    left_pca9685.set_pwm(SERVO_FREQ);
+    static Pca9685 left_pca9685(master_bus, LEFT_PCA9685_ADDR); //! hardware not ready for now
+    ESP_ERROR_CHECK_WITHOUT_ABORT(left_pca9685.init()); //! hardware not ready for now
+    ESP_ERROR_CHECK_WITHOUT_ABORT(left_pca9685.set_pwm(SERVO_FREQ)); //! hardware not ready for now
 
     /*right servos init*/
     static Servo Servo_rf_yaw(RF_YAW_PIN, RF_YAW_MIN, RF_YAW_MAX, RF_YAW_NEUTRAL, 0);
@@ -90,6 +103,13 @@ extern "C" void app_main(void)
 
     /*motion controller init */
     static MotionController Controller(left_pca9685, right_pca9685, Leg_rf, Leg_rm, Leg_rb, Leg_lf, Leg_lm, Leg_lb);
+
+    /*bluetooth init and pairing*/
+    setup_bt_controller();
+    setup_bt_bluedroid();
+    setup_bt_gap();
+    setup_bt_hidh();
+    //bt_pairing(); //TODO
 
     /*Tasks creation*/
     xTaskCreatePinnedToCore(motion_task, "motion_task", 4096, &Controller, 5, nullptr, 1);

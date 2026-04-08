@@ -22,6 +22,13 @@ class MotionController
         void start_demo(uint64_t now_us);
         void update(uint64_t now_us);
 
+        // void move_forward();
+        // void move_backward();
+        // void move_left();
+        // void move_right();
+        // void rotate_clockwise();
+        // void rotate_anticlockwise();
+
     private:
 
         Pca9685 &_Right_side_driver;

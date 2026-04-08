@@ -67,13 +67,13 @@ uint16_t Servo::angle_to_pulse_ms(float angle) const
         return this->_neutral_pulse_us;
 }
 
-float Servo::clampf(float target_deg, float min_deg, float max_deg) const
+float Servo::clampf(float current_val, float min_val, float max_val) const
 {
-    if (target_deg < min_deg)
-        return min_deg;
-    if (target_deg > max_deg)
-        return max_deg;
-    return target_deg;
+    if (current_val < min_val)
+        return min_val;
+    if (current_val > max_val)
+        return max_val;
+    return current_val;
 }
 
 float Servo::lerp(float a, float b, float t) const
