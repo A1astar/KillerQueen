@@ -108,8 +108,7 @@ extern "C" void app_main(void)
     setup_bt_controller();
     setup_bt_bluedroid();
     setup_bt_gap();
-    setup_bt_hidh();
-    //bt_pairing(); //TODO
+    bt_pairing(); //TODO
 
     /*Tasks creation*/
     xTaskCreatePinnedToCore(motion_task, "motion_task", 4096, &Controller, 5, nullptr, 1);

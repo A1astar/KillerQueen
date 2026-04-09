@@ -12,5 +12,6 @@
 #include "const.hpp"
 
 #include <stdio.h>
+#include <string.h>
 
 #endif
