@@ -17,12 +17,16 @@ void motion_task(void *pv_arg)
     uint64_t now_us = (uint64_t)esp_timer_get_time();
 
     Controller->start_demo(now_us);
+    Controller->move(0, 0, 0);
 
     TickType_t last_wake = xTaskGetTickCount();
     while (true)
     {
         if(xQueueReceive(motion_data_queue, &motion_data, pdMS_TO_TICKS(10)) == pdPASS)
+        {
             print_motion_data_queue(motion_data);
+            Controller->move(motion_data.forward, motion_data.lateral, motion_data.lateral);
+        }
         now_us = (uint64_t)esp_timer_get_time();
         Controller->update(now_us);
         vTaskDelayUntil(&last_wake, pdMS_TO_TICKS(10));

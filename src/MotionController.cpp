@@ -33,14 +33,14 @@ void MotionController::start_demo(uint64_t now_us)
 
 void MotionController::update(uint64_t now_us)
 {
-    if ((now_us - this->_last_command_us) >= 800000ULL)
+    if ((now_us - this->_last_command_us) >= 600000ULL)
     {
         if (this->_phase == 0)
-            this->_Leg_rf.move_servos_degree(0.0f, 90.0f, 0.0f, 500, now_us);
-        else if (this->_phase == 1)
-            this->_Leg_rf.move_servos_degree(0.0f, -90.0f, 0.0f, 500, now_us);
-        else
             this->_Leg_rf.move_servos_degree(0.0f, 0.0f, 0.0f, 500, now_us);
+        else if (this->_phase == 1)
+            this->_Leg_rf.move_servos_degree(-30.0f, -20.0f, 20.0f, 500, now_us);
+        else
+            this->_Leg_rf.move_servos_degree(30.0f, 20.0f, -20.0f, 500, now_us);
 
         this->_phase = (this->_phase + 1) % 3;
         this->_last_command_us = now_us;
