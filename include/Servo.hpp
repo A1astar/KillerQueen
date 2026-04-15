@@ -1,7 +1,7 @@
 #ifndef SERVO_HPP
 #define SERVO_HPP
 
-#include "killerqueen.hpp"
+#include <stdint.h>
 
 class Servo
 {
@@ -24,7 +24,7 @@ class Servo
         float get_current_pos_deg() const;
 
     private:
-        uint16_t angle_to_pulse_ms(float angle) const;
+        uint16_t angle_to_pulse_us(float angle) const;
         float clampf(float current_val, float min_val, float max_val) const;
         float lerp(float a, float b, float t) const;
         float smootherstep(float t) const;

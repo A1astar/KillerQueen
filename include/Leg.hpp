@@ -4,6 +4,8 @@
 #include "Servo.hpp"
 #include "Pca9685.hpp"
 
+#pragma once
+
 class Leg
 {
     public:

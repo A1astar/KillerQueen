@@ -138,4 +138,8 @@
 #define LB_FOOT_PITCH_NEUTRAL 1700
 #define LB_FOOT_PITCH_MAX 2700
 
+// ===== datas =====
+typedef uint8_t gamepad_data[11];
+
+
 #endif

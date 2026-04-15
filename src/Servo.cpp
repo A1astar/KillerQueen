@@ -57,7 +57,7 @@ void Servo::update(uint64_t now_us)
     }
 }
 
-uint16_t Servo::angle_to_pulse_ms(float angle) const
+uint16_t Servo::angle_to_pulse_us(float angle) const
 {
     if (angle < 0.0f)
         return this->_min_pulse_us + (angle + 90.0f) * (this->_neutral_pulse_us - this->_min_pulse_us) / 90;
@@ -85,6 +85,7 @@ float Servo::smootherstep(float t) const
 {
     t = this->clampf(t, 0.0f, 1.0f);
     return t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f);
+    //return t * t * t * t * (35.0f - 84.0f * t + 70.0f * t * t - 20.0f * t * t * t);
 }
 
 bool Servo::get_is_moving() const
@@ -99,7 +100,7 @@ uint8_t Servo::get_channel() const
 
 uint16_t Servo::get_current_pulse() const
 {
-    return this->angle_to_pulse_ms(this->_current_pos_degree);
+    return this->angle_to_pulse_us(this->_current_pos_degree);
 }
 
 float Servo::get_current_pos_deg() const

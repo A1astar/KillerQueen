@@ -1,64 +1,19 @@
 #include "../include/killerqueen.hpp"
-#include "../include/Servo.hpp"
-#include "../include/Leg.hpp"
-#include "../include/Pca9685.hpp"
-#include "../include/MotionController.hpp"
-#include "../include/bluetooth.hpp"
-
-esp_err_t master_bus_init(i2c_master_bus_handle_t *master_bus, gpio_num_t sda, gpio_num_t scl)
-{
-    i2c_master_bus_config_t master_bus_config {
-        .i2c_port = -1,
-        .sda_io_num = sda,
-        .scl_io_num = scl,
-        .clk_source = I2C_CLK_SRC_DEFAULT,
-        .glitch_ignore_cnt = 7,
-        .intr_priority = 0,
-        .trans_queue_depth = 0,
-        .flags {
-            .enable_internal_pullup = true,
-            .allow_pd = false,
-        }
-    };
-    return i2c_new_master_bus(&master_bus_config, master_bus);
-}
-
-static void motion_task(void *pv_arg)
-{
-    MotionController *Controller = static_cast<MotionController*>(pv_arg);
-
-    uint64_t now_us = (uint64_t)esp_timer_get_time();
-
-    Controller->start_demo(now_us);
-
-    TickType_t last_wake = xTaskGetTickCount();
-    TickType_t period = pdMS_TO_TICKS(10);
-
-    while (true)
-    {
-        now_us = (uint64_t)esp_timer_get_time();
-        Controller->update(now_us);
-        vTaskDelayUntil(&last_wake, period);
-    }
-}
-
-void setup_nvs()
-{
-    if(nvs_flash_init() == ESP_ERR_NVS_NO_FREE_PAGES)
-    {
-        ESP_ERROR_CHECK_WITHOUT_ABORT(nvs_flash_erase());
-        ESP_ERROR_CHECK_WITHOUT_ABORT(nvs_flash_init());
-    }
-}
 
 extern "C" void app_main(void)
 {
     /*nvs partition init*/
-    setup_nvs();
+    nvs_init();
+
+    /*queus for inter-task data init*/
+    queues_init();
+
+    /*bluetooth init*/
+    bt_init();
 
     /*i2c master bus init*/
     static i2c_master_bus_handle_t master_bus;
-    ESP_ERROR_CHECK(master_bus_init(&master_bus, GPIO_NUM_21, GPIO_NUM_22));
+    i2c_master_bus_init(&master_bus, GPIO_NUM_21, GPIO_NUM_22);
 
     /*pca9685 init*/
     static Pca9685 right_pca9685(master_bus, RIGHT_PCA9685_ADDR);
@@ -102,14 +57,22 @@ extern "C" void app_main(void)
     static Leg Leg_lb(Servo_lb_yaw, Servo_lb_elbow_pitch, Servo_lb_foot_pitch);
 
     /*motion controller init */
-    static MotionController Controller(left_pca9685, right_pca9685, Leg_rf, Leg_rm, Leg_rb, Leg_lf, Leg_lm, Leg_lb);
-
-    /*bluetooth init and pairing*/
-    setup_bt_controller();
-    setup_bt_bluedroid();
-    setup_bt_gap();
-    bt_pairing(); //TODO
+    static MotionController Controller
+    (
+        left_pca9685,
+        right_pca9685,
+        Leg_rf,
+        Leg_rm,
+        Leg_rb,
+        Leg_lf,
+        Leg_lm,
+        Leg_lb,
+        bt_data_queue
+    );
 
     /*Tasks creation*/
+    xTaskCreatePinnedToCore(bt_data_parsing_task, "bt_data_parsing_task", 4096, nullptr, 5, nullptr, 1);
     xTaskCreatePinnedToCore(motion_task, "motion_task", 4096, &Controller, 5, nullptr, 1);
+    xTaskCreatePinnedToCore(action_task, "action_task", 4096, nullptr, 5, nullptr, 1);
+
 }

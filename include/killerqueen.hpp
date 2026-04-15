@@ -1,17 +1,39 @@
 #ifndef KILLERQUEEN_H
 #define KILLERQUEEN_H
 
-// ===== includes =====
-
+// ===== libs =====
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/ringbuf.h"
+#include "freertos/queue.h"
 #include "esp_timer.h"
 #include "nvs_flash.h"
+#include "esp_log.h"
+#include <stdio.h>
+#include <string.h>
 
 #include "bluetooth.hpp"
 #include "const.hpp"
+#include "serial_print.hpp"
+#include "bluetooth.hpp"
+#include "tasks.hpp"
 
-#include <stdio.h>
-#include <string.h>
+// ===== Class =====
+#include "MotionController.hpp"
+#include "Pca9685.hpp"
+#include "Leg.hpp"
+#include "Servo.hpp"
+#include "init.hpp"
+
+// ===== Global Var =====
+extern QueueHandle_t bt_data_queue;
+extern QueueHandle_t motion_data_queue;
+
+typedef struct s_motion_data
+{
+    uint8_t forward;
+    uint8_t lateral;
+    uint8_t rotation;
+} t_motion_data;
 
 #endif
