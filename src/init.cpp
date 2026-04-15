@@ -29,8 +29,8 @@ void i2c_master_bus_init(i2c_master_bus_handle_t *master_bus, gpio_num_t sda, gp
 
 void queues_init()
 {
-    bt_data_queue = xQueueCreate(1, sizeof(gamepad_data));
-    if(bt_data_queue == NULL)
+    raw_data_queue = xQueueCreate(1, sizeof(gamepad_data));
+    if(raw_data_queue == NULL)
         printf("failed to create bt_data_queue\n");
     else
         printf("bt_data_queue created\n");

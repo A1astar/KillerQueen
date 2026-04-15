@@ -10,8 +10,7 @@ MotionController::MotionController
     Leg &_Leg_rb,
     Leg &_Leg_lf,
     Leg &_Leg_lm,
-    Leg &_Leg_lb,
-    QueueHandle_t &data_queue
+    Leg &_Leg_lb
 )
 :   _Right_side_driver(right_side_controller),
     _Left_side_driver(left_side_controller),
@@ -22,9 +21,7 @@ MotionController::MotionController
     _Leg_lm(_Leg_lm),
     _Leg_lb(_Leg_lb),
     _last_command_us(0),
-    _phase(0),
-    _data_queue(data_queue),
-    _data_buffer(0)
+    _phase(0)
 {}
 
 void MotionController::start_demo(uint64_t now_us)
@@ -58,10 +55,4 @@ void MotionController::move(float forward, float lateral, float rotation)
     (void)forward;
     (void)lateral;
     (void)rotation;
-}
-
-uint8_t *MotionController::get_data()
-{
-    xQueueReceive(this->_data_queue, &this->_data_buffer, portMAX_DELAY);
-    return this->_data_buffer;
 }

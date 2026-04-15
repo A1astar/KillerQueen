@@ -25,15 +25,26 @@ void bt_hidh_callback(esp_hidh_cb_event_t event, esp_hidh_cb_param_t *param)
 
         case ESP_HIDH_CLOSE_EVT:
             printf("bt_hidh_callback() -> HIDH host connection closed\n");
+            ESP_ERROR_CHECK(esp_bt_gap_start_discovery(ESP_BT_INQ_MODE_GENERAL_INQUIRY, 0x30, 0));
         break;
 
         case ESP_HIDH_DATA_IND_EVT:
             printf("bt_hidh_callback() -> HIDH receive data on interrupt channel\n");
-            print_dpad_datas(param->data_ind.data[DPAD_BYTE]);
+            xQueueSend(raw_data_queue, param->data_ind.data, portMAX_DELAY);
         break;
 
         default:
         break;
+    }
+}
+
+void connect_controller(esp_bt_gap_cb_param_t *param)
+{
+    if(is_gamepad_addr(gamepad_addr, param->disc_res.bda))
+    {
+        esp_bt_hid_host_connect(param->disc_res.bda);
+        esp_bt_gap_cancel_discovery();
+        printf("Controller connected\n");
     }
 }
 
@@ -42,12 +53,7 @@ void bt_gap_callback(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param)
     switch (event)
     {
         case ESP_BT_GAP_DISC_RES_EVT:
-            if(is_gamepad_addr(gamepad_addr, param->disc_res.bda))
-            {
-                esp_bt_hid_host_connect(param->disc_res.bda);
-                esp_bt_gap_cancel_discovery();
-                printf("Controller connected\n");
-            }
+            connect_controller(param);
         break;
 
         default:

@@ -66,8 +66,7 @@ extern "C" void app_main(void)
         Leg_rb,
         Leg_lf,
         Leg_lm,
-        Leg_lb,
-        bt_data_queue
+        Leg_lb
     );
 
     /*Tasks creation*/

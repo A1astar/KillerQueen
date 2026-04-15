@@ -26,14 +26,9 @@
 #include "init.hpp"
 
 // ===== Global Var =====
-extern QueueHandle_t bt_data_queue;
+extern QueueHandle_t raw_data_queue;
 extern QueueHandle_t motion_data_queue;
+extern QueueHandle_t action_data_queue;
 
-typedef struct s_motion_data
-{
-    uint8_t forward;
-    uint8_t lateral;
-    uint8_t rotation;
-} t_motion_data;
 
 #endif

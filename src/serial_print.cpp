@@ -62,3 +62,10 @@ void print_dpad_datas(uint8_t data)
         break;
     }
 }
+
+void print_motion_data_queue(t_motion_data motion_data)
+{
+    printf("forward: %02X\n", motion_data.forward);
+    printf("lateral: %02X\n", motion_data.lateral);
+    printf("rotation: %02X\n", motion_data.rotation);
+}

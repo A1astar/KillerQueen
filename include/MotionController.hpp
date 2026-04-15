@@ -21,8 +21,7 @@ class MotionController
             Leg &_Leg_rb,
             Leg &_Leg_lf,
             Leg &_Leg_lm,
-            Leg &_Leg_lb,
-            QueueHandle_t &data_queue
+            Leg &_Leg_lb
         );
 
         void start_demo(uint64_t now_us);
@@ -45,9 +44,6 @@ class MotionController
 
         uint64_t _last_command_us;
         uint32_t _phase;
-
-        QueueHandle_t &_data_queue;
-        uint8_t _data_buffer[11];
 };
 
 #endif
